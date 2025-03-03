@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  milestone: one
+  name: MyString
+  completed_at: 2025-02-27 00:28:50
+
+two:
+  milestone: two
+  name: MyString
+  completed_at: 2025-02-27 00:28:50
