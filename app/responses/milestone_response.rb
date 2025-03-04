@@ -14,10 +14,10 @@ class MilestoneResponse
       due_date: @milestone.due_date,
       private: @milestone.private,
       image_url: image_url,
-      categories: @milestone.categories.pluck(:name),
+      categories: @milestone.categories.pluck(:name)
     }
-    
-    data[:user] = UserResponse.new(@milestone.user).as_json if @includes.include?(:user)
+
+    data[:user] = UserResponse.new(@milestone.user).as_json if @includes.include?(:user) && @milestone.user
     data[:comments] = comments if @includes.include?(:comments)
     data[:lists] = lists if @includes.include?(:lists)
     data[:checkpoints] = checkpoints if @includes.include?(:checkpoints)
@@ -42,14 +42,14 @@ class MilestoneResponse
   def format_list(list)
     {
       id: list.id,
-      name: list.name,
+      name: list.name
     }
   end
 
   def format_comment(comment)
     MilestoneCommentResponse.new(comment).as_json
   end
-  
+
   def image_url
     return nil unless @milestone.image.attached?
     url_for(@milestone.image)

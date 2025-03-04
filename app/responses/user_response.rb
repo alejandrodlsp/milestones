@@ -12,7 +12,8 @@ class UserResponse
       first_name: @user.name,
       last_name: @user.last_name,
       avatar: image_url,
-      email: @user.email
+      email: @user.email,
+      join_date: @user.created_at
     }
   end
 

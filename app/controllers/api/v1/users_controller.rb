@@ -43,6 +43,6 @@ class Api::V1::UsersController < ApplicationController
 
   def set_user
     @user = User.find(params[:id])
-    return head :not_found unless @user
+    head :not_found unless @user
   end
 end

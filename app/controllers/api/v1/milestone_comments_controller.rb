@@ -19,9 +19,9 @@ class Api::V1::MilestoneCommentsController < ApplicationController
 
     if comment
       comment.destroy
-      render json: { status: 'ok', message: 'Comment deleted successfully' }, status: :ok
+      render json: { status: "ok", message: "Comment deleted successfully" }, status: :ok
     else
-      render json: { error: 'Comment not found' }, status: :not_found
+      render json: { error: "Comment not found" }, status: :not_found
     end
   end
 
@@ -33,7 +33,7 @@ class Api::V1::MilestoneCommentsController < ApplicationController
       .where(id: params[:milestone_id])
       .first
 
-    return head :not_found unless @milestone
+    head :not_found unless @milestone
   end
 
   def comment_params

@@ -1,14 +1,14 @@
 class SigninController < ApplicationController
-  before_action :authorize_access_request!, only: [:destroy]
+  before_action :authorize_access_request!, only: [ :destroy ]
 
   def create
     begin
       user = User.find_by!(email: params[:email])
     rescue
-      render json: { error: 'Invalid email/password combination.' }, status: :unauthorized
+      render json: { error: "Invalid email/password combination." }, status: :unauthorized
       return
     end
-    
+
     user.update!(last_login_attempt: DateTime.now)
 
     unless user.can_login?
@@ -17,7 +17,7 @@ class SigninController < ApplicationController
       return
     end
 
-    unless user.authenticate(params[:password]) 
+    unless user.authenticate(params[:password])
       user.increment_login_attempts!
       render json: { error: "Invalid email/password combination." }, status: :unauthorized
       return

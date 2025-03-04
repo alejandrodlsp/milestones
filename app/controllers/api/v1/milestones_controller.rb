@@ -1,6 +1,6 @@
 class Api::V1::MilestonesController < ApplicationController
   before_action :authorize_access_request!
-  before_action :set_milestone, only: %i[ show update destroy ]
+  before_action :set_milestone, only: %i[ show update destroy clone ]
 
   def index
     @milestones = Milestone.external_only
@@ -10,13 +10,13 @@ class Api::V1::MilestonesController < ApplicationController
 
   def user_milestones
     @milestones = current_user.milestones
-    
+
     render json: @milestones
   end
 
   def show
     includes = params[:includes]&.split(",")&.map(&:to_sym) || []
-    
+
     render json: MilestoneResponse.new(@milestone, includes: includes).as_json
   end
 
@@ -52,6 +52,15 @@ class Api::V1::MilestonesController < ApplicationController
     @milestone.destroy!
   end
 
+  def clone
+    cloned_milestone = @milestone.clone_for_user(current_user)
+    render json: cloned_milestone, status: :created
+  end
+
+  def popular
+    render json: FetchPopularMilestonesService.call
+  end
+
   private
 
   def set_milestone
@@ -60,7 +69,7 @@ class Api::V1::MilestonesController < ApplicationController
       .where(id: params[:id])
       .first
 
-    return head :not_found unless @milestone
+    head :not_found unless @milestone
   end
 
   def milestone_params

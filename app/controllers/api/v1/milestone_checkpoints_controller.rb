@@ -8,20 +8,32 @@ class Api::V1::MilestoneCheckpointsController < ApplicationController
     if checkpoint.save
       render json: checkpoint.as_json, status: :created
     else
-      render json: { errors: checkpoint.errors.full_messages }, status: :unprocessable_entity
+      render json: { status: "error", errors: checkpoint.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def destroy
     checkpoint = @milestone.checkpoints.find_by(id: params[:id])
-    return head :not_found unless @milestone.user_id == current_user.id
 
     if checkpoint
       checkpoint.destroy
-      render json: { status: 'ok', message: 'Checkpoint deleted successfully' }, status: :ok
+      render json: { status: "ok", message: "Checkpoint deleted successfully" }, status: :ok
     else
-      render json: { error: 'Checkpoint not found' }, status: :not_found
+      render json: { status: "error", error: "Checkpoint not found" }, status: :not_found
     end
+  end
+
+  def update
+    checkpoint = @milestone.checkpoints.find_by(id: params[:id])
+
+    completed_param = params[:completed] == false || params[:completed] == "0"
+    if params[:completed]
+      checkpoint.update(completed_at: Time.current)
+    elsif completed_param
+      checkpoint.update(completed_at: nil)
+    end
+    
+    render json: { status: "ok", message: "Checkpoint updated", checkpoint: checkpoint }, status: :ok
   end
 
   private
@@ -32,6 +44,7 @@ class Api::V1::MilestoneCheckpointsController < ApplicationController
       .where(id: params[:milestone_id])
       .first
 
-    return head :not_found unless @milestone
+    head :not_found unless @milestone.user_id == current_user.id
+    head :not_found unless @milestone
   end
 end

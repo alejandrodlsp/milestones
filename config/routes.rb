@@ -1,16 +1,20 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :milestones, only: [:index, :show, :create, :update, :destroy] do
+      resources :milestones, only: [ :index, :show, :create, :update, :destroy ] do
         collection do
           get :user_milestones
+          get :popular
         end
-        resources :comments, only: [:create, :destroy], controller: 'milestone_comments'
-        resources :checkpoints, only: [:create, :destroy], controller: 'milestone_checkpoints'
+        member do
+          post :clone
+        end
+        resources :comments, only: [ :create, :destroy ], controller: "milestone_comments"
+        resources :checkpoints, only: [ :create, :destroy, :update ], controller: "milestone_checkpoints"
       end
       resources :lists
-      resources :categories, only: [:index]
-      resources :users, only: [:show, :update] do
+      resources :categories, only: [ :index ]
+      resources :users, only: [ :show, :update ] do
         collection do
           put :update_password
           get :me

@@ -3,7 +3,7 @@ class SignupController < ApplicationController
     user = User.new(user_params.merge(last_login_attempt: DateTime.now))
 
     unless user.save
-      render json: { error: user.errors.full_messages.join(' ') }, status: :unprocessable_entity
+      render json: { error: user.errors.full_messages.join(" ") }, status: :unprocessable_entity
       return
     end
 
