@@ -81,9 +81,10 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: milestones_production
-    username: milestones
+    database: <%= ENV['MILESTONES_DATABASE_NAME'] %>
+    username: <%= ENV['MILESTONES_DATABASE_USER'] %>
     password: <%= ENV["MILESTONES_DATABASE_PASSWORD"] %>
+    url: <%= ENV['MILESTONES_DATABASE_URL'] %>
   cache:
     <<: *primary_production
     database: milestones_production_cache
