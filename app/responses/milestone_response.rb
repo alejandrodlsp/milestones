@@ -1,9 +1,10 @@
 class MilestoneResponse
   include Rails.application.routes.url_helpers
 
-  def initialize(milestone, includes: [])
+  def initialize(milestone, current_user, includes: [])
     @milestone = milestone
     @includes = includes
+    @current_user = current_user
   end
 
   def as_json
@@ -32,9 +33,18 @@ class MilestoneResponse
   end
 
   def lists
-    @_lists ||= @milestone.lists.map { |list| format_list(list) }
-  end
+    return @_lists if defined?(@_lists)
+  
+    direct_lists = @milestone.lists.where(user: @current_user)
+    cloned_milestones = Milestone.where(original_milestone_id: @milestone.id, user_id: @current_user.id)
+    cloned_lists = List.joins(:milestone_lists)
+                       .where(milestone_lists: { milestone_id: cloned_milestones.select(:id) })
+  
 
+    all_lists = (direct_lists + cloned_lists).uniq  
+    @_lists = all_lists.map { |list| format_list(list) }
+  end
+  
   def comments
     @_comments ||= @milestone.comments.map { |comment| format_comment(comment) }
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_04_102111) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_16_110418) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_102111) do
     t.index ["user_id"], name: "index_milestone_comments_on_user_id"
   end
 
+  create_table "milestone_completions", force: :cascade do |t|
+    t.bigint "milestone_id", null: false
+    t.text "summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["milestone_id"], name: "index_milestone_completions_on_milestone_id"
+  end
+
   create_table "milestone_lists", force: :cascade do |t|
     t.bigint "milestone_id", null: false
     t.bigint "list_id", null: false
@@ -102,8 +110,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_102111) do
     t.boolean "private", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "due_date", null: false
+    t.datetime "due_date"
     t.bigint "original_milestone_id"
+    t.integer "status", default: 0, null: false
     t.index ["original_milestone_id"], name: "index_milestones_on_original_milestone_id"
     t.index ["user_id"], name: "index_milestones_on_user_id"
   end
@@ -130,6 +139,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_04_102111) do
   add_foreign_key "milestone_checkpoints", "milestones"
   add_foreign_key "milestone_comments", "milestones"
   add_foreign_key "milestone_comments", "users"
+  add_foreign_key "milestone_completions", "milestones"
   add_foreign_key "milestone_lists", "lists"
   add_foreign_key "milestone_lists", "milestones"
   add_foreign_key "milestones", "milestones", column: "original_milestone_id"

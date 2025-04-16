@@ -12,7 +12,11 @@ Rails.application.routes.draw do
         resources :comments, only: [ :create, :destroy ], controller: "milestone_comments"
         resources :checkpoints, only: [ :create, :destroy, :update ], controller: "milestone_checkpoints"
       end
-      resources :lists
+      resources :lists do
+        member do
+          post :add_milestone
+        end
+      end
       resources :categories, only: [ :index ]
       resources :users, only: [ :show, :update ] do
         collection do
@@ -20,6 +24,10 @@ Rails.application.routes.draw do
           get :me
         end
       end
+
+      resources :milestone_completions, only: [:show, :create]
+      
+      get '/milestone-share/:id', to: 'share#milestone'
     end
   end
 

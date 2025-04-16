@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta property="og:title" content="<%= @milestone.name %>" />
+    <meta property="og:description" content="<%= @milestone.description %>" />
+    <meta property="og:image" content="<%= url_for(@milestone.image) %>" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta http-equiv="refresh" content="0;url=http://localhost:5173/milestone/<%= @milestone.id %>" />
+  </head>
+  <body></body>
+</html>

@@ -3,9 +3,11 @@ class Api::V1::MilestonesController < ApplicationController
   before_action :set_milestone, only: %i[ show update destroy clone ]
 
   def index
-    @milestones = Milestone.external_only
+    milestones = Milestone.public_only
 
-    render json: @milestones
+    response = Milestones::FilterPaginateService.call(milestones, current_user, params)
+
+    render json: response
   end
 
   def user_milestones
@@ -17,7 +19,10 @@ class Api::V1::MilestonesController < ApplicationController
   def show
     includes = params[:includes]&.split(",")&.map(&:to_sym) || []
 
-    render json: MilestoneResponse.new(@milestone, includes: includes).as_json
+    user_milestone = Milestone.where(user: current_user, original_milestone: @milestone).first
+    @milestone = user_milestone if user_milestone
+
+    render json: MilestoneResponse.new(@milestone, current_user, includes: includes).as_json
   end
 
   def create
@@ -53,12 +58,13 @@ class Api::V1::MilestonesController < ApplicationController
   end
 
   def clone
-    cloned_milestone = @milestone.clone_for_user(current_user)
+    cloned_milestone = Milestones::CloneMilestoneService.call(@milestone, current_user)
     render json: cloned_milestone, status: :created
   end
 
   def popular
-    render json: FetchPopularMilestonesService.call
+    popular_milestone = Milestones::FetchPopularMilestonesService.call
+    render json: popular_milestone, status: :ok
   end
 
   private

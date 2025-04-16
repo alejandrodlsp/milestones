@@ -1,6 +1,8 @@
 class ApplicationService
   private_class_method :new
 
+  class ServiceError < StandardError; end
+  
   def self.call(...)
     instance = nil
 
