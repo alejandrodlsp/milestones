@@ -1,11 +1,18 @@
 class User < ApplicationRecord
   RESET_PASSWORD_TOKEN_VALIDITY = 4.hours.freeze
 
+  has_secure_password
   has_one_attached :image
   has_many :lists, dependent: :destroy
   has_many :milestones, dependent: :destroy
 
-  has_secure_password
+  # Amistades que el usuario envió
+  has_many :friendships
+  has_many :friends, through: :friendships, source: :friend
+
+  # Amistades que recibió
+  has_many :inverse_friendships, class_name: 'Friendship', foreign_key: 'friend_id'
+  has_many :inverse_friends, through: :inverse_friendships, source: :user
 
   PASSWORD_FORMAT = /\A
     (?=.{8,})          # Must contain 8 or more characters
@@ -67,5 +74,33 @@ class User < ApplicationRecord
 
   def can_login?
     self.last_login_attempt + timeout.minutes < DateTime.now
+  end
+
+  def all_friends
+    friends_accepted + inverse_friends_accepted
+  end
+  
+  def friends_accepted
+    friendships.where(status: 'accepted').map(&:friend)
+  end
+  
+  def inverse_friends_accepted
+    inverse_friendships.where(status: 'accepted').map(&:user)
+  end
+
+  def friendship_status(user)
+    friendship = Friendship.find_by(user: self, friend: user) || Friendship.find_by(user: user, friend: self)
+
+    return 'same_user' if user.id == self.id
+    return 'not_friends' if friendship.nil?
+
+    return 'pending' if friendship.user == user && friendship.status == 'pending'
+    return 'sent' if friendship.user == self && friendship.status == 'pending'
+
+    friendship.status
+  end
+
+  def admin?
+    role == "admin"
   end
 end

@@ -10,6 +10,12 @@ class ApplicationController < ActionController::API
   end
 
   def not_authorized
-    render json: { error: "Unauthorized" }, status: :unauthorized
+    render_error("Unauthorized", :unauthorized)
+  end
+
+  def render_error(message, status = :unprocessable_entity, details: nil)
+    error_response = { error: message }
+    error_response[:details] = details if details.present?
+    render json: error_response, status: status
   end
 end

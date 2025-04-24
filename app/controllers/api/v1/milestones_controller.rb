@@ -10,23 +10,23 @@ class Api::V1::MilestonesController < ApplicationController
     render json: response
   end
 
-  def user_milestones
-    @milestones = current_user.milestones
-
-    render json: @milestones
-  end
-
   def show
     includes = params[:includes]&.split(",")&.map(&:to_sym) || []
-
-    user_milestone = Milestone.where(user: current_user, original_milestone: @milestone).first
-    @milestone = user_milestone if user_milestone
-
+    
+    unless @milestone
+      render json: {
+        error: "The milestone you are trying to access does not exist anymore or you do not have permissions to view it"
+      }, status: :unprocessable_entity
+    end
     render json: MilestoneResponse.new(@milestone, current_user, includes: includes).as_json
   end
 
   def create
-    @milestone = Milestone.new(milestone_params.merge(user_id: current_user.id))
+    @milestone = if current_user.admin?
+      Milestone.new(milestone_params) 
+    else
+      Milestone.new(milestone_params.merge(user_id: current_user.id))
+    end
 
     if @milestone.save
       render json: @milestone, status: :created
@@ -49,17 +49,33 @@ class Api::V1::MilestonesController < ApplicationController
   end
 
   def destroy
-    unless @milestone.user_id == current_user.id
-      render json: { error: "You are not authorized to delete this milestone" }, status: :forbidden
-      return
-    end
-
-    @milestone.destroy!
+    deleted_milestone = Milestones::DeleteService.call(@milestone, current_user)
+    render json: deleted_milestone, status: :deleted
+  rescue StandardError => e
+    render json: e, status: :unprocessable_entity
   end
 
   def clone
     cloned_milestone = Milestones::CloneMilestoneService.call(@milestone, current_user)
     render json: cloned_milestone, status: :created
+  end
+
+  def from_friends
+    @milestones = Milestones::FetchFromFriendsService.call(current_user)
+
+    render json: { milestones: @milestones }, status: :ok
+  end
+
+  def from_user
+    @milestones = current_user.milestones
+
+    render json: { milestones: @milestones }, status: :ok
+  end
+
+  def recommendations
+    @milestones = Milestones::RecommendationService.call(current_user)
+
+    render json: { milestones: @milestones }, status: :ok
   end
 
   def popular
@@ -74,11 +90,9 @@ class Api::V1::MilestonesController < ApplicationController
       .accesible_by_user(current_user)
       .where(id: params[:id])
       .first
-
-    head :not_found unless @milestone
   end
 
   def milestone_params
-    params.require(:milestone).permit(:name, :description, :image, :private, :due_date, category_ids: [], list_ids: [])
+    params.require(:milestone).permit(:name, :description, :image, :private, :due_date, category_ids: [], list_ids: [], checkpoints_attributes: [:name])
   end
 end

@@ -3,8 +3,10 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :milestones, only: [ :index, :show, :create, :update, :destroy ] do
         collection do
-          get :user_milestones
+          get :from_user
+          get :from_friends
           get :popular
+          get :recommendations
         end
         member do
           post :clone
@@ -26,6 +28,14 @@ Rails.application.routes.draw do
       end
 
       resources :milestone_completions, only: [:show, :create]
+      resources :friendships, param: :friend_id, only: [:index, :show, :create, :update, :destroy] do
+        collection do
+          get :pending
+          get :sent
+          get :possible
+          get :recommended
+        end
+      end
       
       get '/milestone-share/:id', to: 'share#milestone'
     end

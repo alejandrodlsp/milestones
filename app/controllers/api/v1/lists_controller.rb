@@ -6,6 +6,14 @@ class Api::V1::ListsController < ApplicationController
     render json: current_user.lists, status: :ok
   end
 
+  def discover
+    lists = List.external_only
+
+    response = Lists::FilterPaginateService.call(lists, current_user, params)
+
+    render json: response
+  end
+
   def show
     includes = params[:includes]&.split(",")&.map(&:to_sym) || []
 
@@ -34,7 +42,7 @@ class Api::V1::ListsController < ApplicationController
   end
 
   def add_milestone
-    @milestone = Milestone.find(params[:milestone_id])
+    @milestone = Milestone.accesible_by_user(current_user).find(params[:milestone_id])
     render json: { "message": "No milestone found" }, status: :unprocessable_entity unless @milestone
     render json: { "message": "No list found" }, status: :unprocessable_entity unless @list
 

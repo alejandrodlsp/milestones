@@ -1,14 +1,7 @@
 class SignupController < ApplicationController
   def create
-    user = User.new(user_params.merge(last_login_attempt: DateTime.now))
-
-    unless user.save
-      render json: { error: user.errors.full_messages.join(" ") }, status: :unprocessable_entity
-      return
-    end
-
-    UserMailer.welcome_email(user).deliver_later
-
+    user = Users::CreateUserService.call(user_params)
+    
     payload = { user_id: user.id }
     session = JWTSessions::Session.new(payload: payload, refresh_by_access_allowed: true)
     tokens = session.login
@@ -19,6 +12,8 @@ class SignupController < ApplicationController
       secure: Rails.env.production?
     )
     render json: { csrf: tokens[:csrf] }
+  rescue StandardError => e
+    render json: { error: e }, status: :unprocessable_entity
   end
 
   private

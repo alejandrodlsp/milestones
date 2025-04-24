@@ -46,5 +46,6 @@ class Api::V1::MilestoneCheckpointsController < ApplicationController
 
     head :not_found unless @milestone.user_id == current_user.id
     head :not_found unless @milestone
+    head :unprocessable_entity unless @milestone.status == Milestone::ACTIVE
   end
 end

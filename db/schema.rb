@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_16_110418) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_21_191529) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_16_110418) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "friendships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "friend_id", null: false
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["friend_id"], name: "index_friendships_on_friend_id"
+    t.index ["user_id"], name: "index_friendships_on_user_id"
   end
 
   create_table "lists", force: :cascade do |t|
@@ -129,10 +139,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_16_110418) do
     t.datetime "last_login"
     t.datetime "last_login_attempt"
     t.integer "loging_attempts", default: 0
+    t.string "role", default: "user", null: false
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "friendships", "users"
+  add_foreign_key "friendships", "users", column: "friend_id"
   add_foreign_key "lists", "users"
   add_foreign_key "milestone_categories", "categories"
   add_foreign_key "milestone_categories", "milestones"

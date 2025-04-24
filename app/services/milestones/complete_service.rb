@@ -2,7 +2,6 @@
 module Milestones
   class CompleteService < ApplicationService
     def initialize(params, current_user)
-      p params
       @milestone_id = params[:milestone_id]
       @summary = params[:summary]
       @images = params[:images]
