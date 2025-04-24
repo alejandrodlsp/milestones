@@ -19,7 +19,7 @@ class MilestoneCompletionResponse
     return [] unless @milestone_completion.images.attached?
 
     @milestone_completion.images.map do |image|
-      url_for(image)
+      url_for(image, host: ENV['HOST_URL'])
     end
   end
 end

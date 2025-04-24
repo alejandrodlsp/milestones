@@ -62,6 +62,6 @@ class MilestoneResponse
 
   def image_url
     return nil unless @milestone.image.attached?
-    url_for(@milestone.image)
+    url_for(@milestone.image, host: ENV['HOST_URL'])
   end
 end

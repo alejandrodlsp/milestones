@@ -60,7 +60,7 @@ module Milestones
     
     def image_url(milestone)
       return nil unless milestone.image.attached?
-      url_for(milestone.image)
+      url_for(milestone.image, host: ENV['HOST_URL'])
     end
   end
 end

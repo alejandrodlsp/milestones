@@ -21,6 +21,6 @@ class UserResponse
 
   def image_url
     return nil unless @user.image.attached?
-    url_for(@user.image)
+    url_for(@user.image, host: ENV['HOST_URL'])
   end
 end
