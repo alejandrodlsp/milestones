@@ -1,5 +1,15 @@
 redis_url = ENV['REDIS_URL']
-uri = URI.parse(redis_url)
+
+puts "REDIS_URL => #{redis_url.inspect}" # TODO Quitar después
+if redis_url.blank?
+  raise "REDIS_URL is missing in ENV"
+end
+
+begin
+  uri = URI.parse(redis_url)
+rescue URI::InvalidURIError => e
+  raise "REDIS_URL is invalid: #{e.message}"
+end
 
 JWTSessions.encryption_key = ENV.fetch("JWT_ENCRYPTION_KEY", "milestones-secret-jwt")
 JWTSessions.token_store = :redis, {
