@@ -63,9 +63,9 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV['HOST_URL'] }
-  config.default_url_options = { host: ENV['HOST_URL'] }
-  
+  config.action_mailer.default_url_options = { host: ENV.fetch("HOST_URL") }
+  config.default_url_options = { host: ENV.fetch("HOST_URL") }
+
   config.action_mailer.deliver_later_queue_name = nil
   config.action_mailer.delivery_method = :smtp # o el método que uses
 
