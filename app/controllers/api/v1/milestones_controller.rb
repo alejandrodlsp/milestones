@@ -50,7 +50,7 @@ class Api::V1::MilestonesController < ApplicationController
 
   def destroy
     deleted_milestone = Milestones::DeleteService.call(@milestone, current_user)
-    render json: deleted_milestone, status: :deleted
+    render json: deleted_milestone, status: :ok
   rescue StandardError => e
     render json: e, status: :unprocessable_entity
   end

@@ -28,10 +28,9 @@ class Milestone < ApplicationRecord
   validates :description, presence: true
   validates :image, presence: true
   
-  scope :active, -> { where(status: :active) }
+  scope :active, -> { where(status: 0) }
   scope :external_only, -> { active.where(private: false, user_id: nil) }
   scope :public_only, -> { active.where(private: false) }
-  scope :not_completed, -> { where(status: :active) }
 
   after_commit :clear_popular_milestones_cache, on: [:create]
 
