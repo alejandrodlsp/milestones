@@ -1,5 +1,5 @@
 class MilestoneCompletionResponse
-  include Rails.application.routes.url_helpers
+  include UrlHelperable
 
   def initialize(milestone_completion)
     @milestone_completion = milestone_completion

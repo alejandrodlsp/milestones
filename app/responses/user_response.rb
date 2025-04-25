@@ -1,6 +1,6 @@
 class UserResponse
-  include Rails.application.routes.url_helpers
-
+  include UrlHelperable
+  
   def initialize(user, includes: [])
     @user = user
     @includes = includes
@@ -22,11 +22,5 @@ class UserResponse
   def image_url
     return nil unless @user.image.attached?
     url_for(@user.image)
-  end
-
-  class << self
-    def default_url_options
-      Rails.application.config.default_url_options
-    end
   end
 end

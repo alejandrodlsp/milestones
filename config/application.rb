@@ -34,5 +34,7 @@ module Milestones
     config.api_only = true
     config.middleware.use Rack::MethodOverride
     config.action_controller.default_protect_from_forgery = false
+    
+    config.active_job.queue_adapter = :sidekiq
   end
 end

@@ -1,6 +1,6 @@
 class MilestoneResponse
-  include Rails.application.routes.url_helpers
-
+  include UrlHelperable
+  
   def initialize(milestone, current_user, includes: [])
     @milestone = milestone
     @includes = includes
