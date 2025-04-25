@@ -1,4 +1,4 @@
-module UrlHelperable
+module UrlHelpable
   extend ActiveSupport::Concern
 
   included do
