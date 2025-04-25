@@ -14,6 +14,8 @@ class User < ApplicationRecord
   has_many :inverse_friendships, class_name: 'Friendship', foreign_key: 'friend_id'
   has_many :inverse_friends, through: :inverse_friendships, source: :user
 
+  scope :not_admin, -> { where.not(role: "admin") }
+
   PASSWORD_FORMAT = /\A
     (?=.{8,})          # Must contain 8 or more characters
     (?=.*\d)           # Must contain a digit

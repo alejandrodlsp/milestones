@@ -9,7 +9,7 @@ class Api::V1::FriendshipsController < ApplicationController
     end
 
     current_friends = User.where(id: user_friends.pluck(:id))
-    possible_friends = User.where.not(id: user_pending_requests.pluck(:id) + [current_user.id])
+    possible_friends = User.not_admin.where.not(id: user_pending_requests.pluck(:id) + [current_user.id])
     recommended_friends = friends_of_friends.uniq.reject do |friend|
       user_friends.include?(friend) || friend.id == current_user.id
     end
