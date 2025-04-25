@@ -1,6 +1,4 @@
-class UserResponse
-  include UrlHelperable
-  
+class UserResponse < ApplicationResponse
   def initialize(user, includes: [])
     @user = user
     @includes = includes

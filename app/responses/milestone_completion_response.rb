@@ -1,6 +1,4 @@
-class MilestoneCompletionResponse
-  include UrlHelperable
-
+class MilestoneCompletionResponse < ApplicationResponse
   def initialize(milestone_completion)
     @milestone_completion = milestone_completion
   end
